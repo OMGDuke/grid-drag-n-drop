@@ -32,6 +32,8 @@ const Inner = styled.div`
 
 injectGlobal`
   @import url('https://fonts.googleapis.com/css?family=Poppins');
+  @import "~react-grid-layout/css/styles.css";
+  @import "~react-resizable/css/styles.css";
 
   html {
     box-sizing: border-box;

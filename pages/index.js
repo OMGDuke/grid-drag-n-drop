@@ -1,20 +1,23 @@
 import React from 'react';
 import _ from 'lodash';
 import styled from 'styled-components';
-
 import { Responsive, WidthProvider } from 'react-grid-layout';
+import Tester from '../components/Tester';
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
+const components = { tester: Tester };
+
 const generateLayout = () =>
-  _.map(_.range(0, 25), (item, i) => {
+  _.map(_.range(0, 5), (item, i) => {
     const y = Math.ceil(Math.random() * 4) + 1;
     return {
-      x: (_.random(0, 5) * 2) % 12,
+      x: (_.random(0, 5) * 3) % 12,
       y: Math.floor(i / 6) * y,
-      w: 2,
+      w: 3,
       h: y,
-      i: i.toString(),
+      component: 'tester',
+      args: { text: 'Wow' },
     };
   });
 
@@ -22,7 +25,7 @@ class Home extends React.Component {
   static defaultProps = {
     className: 'layout',
     rowHeight: 30,
-    onLayoutChange() { },
+    onLayoutChange() {},
     cols: { lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 },
     initialLayout: generateLayout(),
   };
@@ -49,11 +52,15 @@ class Home extends React.Component {
 
   generateDOM() {
     const { layouts } = this.state;
-    return _.map(layouts.lg, (l, i) => (
-      <div key={i}>
-        <span className="text">{i}</span>
-      </div>
-    ));
+    return _.map(layouts.lg, (l, i) => {
+      const Component = components[l.component];
+      const props = l.args;
+      return (
+        <div key={i}>
+          <Component {...props} />
+        </div>
+      );
+    });
   }
 
   render() {
@@ -70,12 +77,8 @@ class Home extends React.Component {
           layouts={layouts}
           onBreakpointChange={this.onBreakpointChange}
           onLayoutChange={this.onLayoutChange}
-          // WidthProvider option
           measureBeforeMount
-          // I like to have it animate on mount. If you don't, delete `useCSSTransforms` (it's default `true`)
-          // and set `measureBeforeMount={true}`.
           compactType={compactType}
-          preventCollision={!compactType}
         >
           {this.generateDOM()}
         </ResponsiveReactGridLayout>
@@ -149,12 +152,6 @@ const HomeContainer = styled.div`
   .react-grid-layout {
     background: #eee;
   }
-  .layoutJSON {
-    background: #ddd;
-    border: 1px solid black;
-    margin-top: 10px;
-    padding: 10px;
-  }
   .columns {
     -moz-columns: 120px;
     -webkit-columns: 120px;
@@ -163,10 +160,10 @@ const HomeContainer = styled.div`
   .react-grid-item {
     box-sizing: border-box;
   }
-  .react-grid-item:not(.react-grid-placeholder) {
-    background: #ccc;
+  /* .react-grid-item:not(.react-grid-placeholder) {
+    background: #4fd;
     border: 1px solid black;
-  }
+  } */
   .react-grid-item.resizing {
     opacity: 0.9;
   }
